@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A focused view of Mona's team projects, activity, and priorities.">
+  <title>Project Pulse</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="dashboard">
+    <header class="dashboard-header">
+      <div class="brand-lockup" aria-label="Project Pulse">
+        <span class="brand-mark" aria-hidden="true">P</span>
+        <span class="brand-name">Project Pulse</span>
+      </div>
+      <div class="header-meta">
+        <span class="live-indicator"><span aria-hidden="true"></span>Team overview</span>
+        <span class="updated-label">Updated today</span>
+      </div>
+    </header>
+
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Mona's workspace <span aria-hidden="true">/</span> October 2026</p>
+        <h1 id="page-title">Keep the momentum going.</h1>
+        <p class="hero-lede">A clear view of what the team is building, where it stands, and where contributors can make an impact next.</p>
+      </div>
+      <div class="pulse-summary" aria-label="Project summary">
+        <div class="summary-item">
+          <strong id="project-count">—</strong>
+          <span>Projects tracked</span>
+        </div>
+        <div class="summary-divider" aria-hidden="true"></div>
+        <div class="summary-item">
+          <strong id="active-count">—</strong>
+          <span>In progress</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="projects-section" aria-labelledby="projects-heading">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Your project landscape</p>
+          <h2 id="projects-heading">All projects</h2>
+        </div>
+        <p class="section-note"><span class="legend-dot" aria-hidden="true"></span>Priority reflects current team focus</p>
+      </div>
+      <div id="project-list" class="project-grid" aria-live="polite">
+        <div class="loading-state" role="status">
+          <span class="spinner" aria-hidden="true"></span>
+          <span>Loading project pulse…</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <template id="project-card-template">
+    <article class="project-card">
+      <div class="card-topline">
+        <span class="status-badge" data-status></span>
+        <span class="priority-badge" data-priority></span>
+      </div>
+      <h3 data-name></h3>
+      <p class="project-summary" data-summary></p>
+      <dl class="project-details">
+        <div class="detail-row">
+          <dt>Owner</dt>
+          <dd class="owner" data-owner></dd>
+        </div>
+        <div class="detail-row">
+          <dt>Recent activity</dt>
+          <dd data-activity></dd>
+        </div>
+      </dl>
+      <div class="card-footer">
+        <span class="contributor-cue">Open to contributors</span>
+        <span class="arrow" aria-hidden="true">↗</span>
+      </div>
+    </article>
+  </template>
+
+  <script>
+    const projectList = document.querySelector("#project-list");
+    const cardTemplate = document.querySelector("#project-card-template");
+    const projectCount = document.querySelector("#project-count");
+    const activeCount = document.querySelector("#active-count");
+    const requiredFields = ["name", "owner", "status", "recentActivity", "priority"];
+
+    function showMessage(title, detail) {
+      projectList.innerHTML = "";
+      const message = document.createElement("div");
+      message.className = "message-state";
+      message.setAttribute("role", "alert");
+      message.innerHTML = `<strong>${title}</strong><span>${detail}</span>`;
+      projectList.append(message);
+      projectCount.textContent = "—";
+      activeCount.textContent = "—";
+    }
+
+    function addText(element, value) {
+      element.textContent = value;
+    }
+
+    function renderProjects(projects) {
+      projectList.innerHTML = "";
+      if (!projects.length) {
+        showMessage("No projects to display", "Project data is available, but no projects have been added yet.");
+        return;
+      }
+
+      projectCount.textContent = projects.length;
+      activeCount.textContent = projects.filter(({ status }) => /progress|active/i.test(status)).length;
+      projects.forEach((project) => {
+        const card = cardTemplate.content.cloneNode(true);
+        const cardElement = card.querySelector(".project-card");
+        const status = String(project.status);
+        const priority = String(project.priority);
+        cardElement.dataset.status = status.toLowerCase().replace(/\s+/g, "-");
+        cardElement.dataset.priority = priority.toLowerCase().replace(/\s+/g, "-");
+        addText(card.querySelector("[data-status]"), status);
+        addText(card.querySelector("[data-priority]"), `${priority} priority`);
+        addText(card.querySelector("[data-name]"), project.name);
+        addText(card.querySelector("[data-summary]"), project.summary || "A team project ready for contributor support.");
+        addText(card.querySelector("[data-owner]"), project.owner);
+        addText(card.querySelector("[data-activity]"), project.recentActivity);
+        projectList.append(card);
+      });
+    }
+
+    fetch("project-data.json")
+      .then((response) => {
+        if (!response.ok) throw new Error(`Data request returned ${response.status}`);
+        return response.json();
+      })
+      .then((data) => {
+        if (!data || !Array.isArray(data.projects)) {
+          throw new Error("The project data does not contain a projects array.");
+        }
+        const malformed = data.projects.find((project) =>
+          !project || requiredFields.some((field) => typeof project[field] !== "string" || !project[field].trim())
+        );
+        if (malformed) throw new Error("A project is missing one or more required fields.");
+        renderProjects(data.projects);
+      })
+      .catch((error) => {
+        console.error("Unable to load Project Pulse data:", error);
+        showMessage("Project Pulse is unavailable", "We couldn't load the project data. Please refresh or check the data source.");
+      });
+  </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+{
+  "projects": [
+    {
+      "name": "Contributor Onboarding",
+      "owner": "Mona Chen",
+      "status": "In progress",
+      "recentActivity": "Welcome flow draft reviewed yesterday",
+      "priority": "High",
+      "summary": "Make a first contribution feel clear, friendly, and achievable for every new teammate."
+    },
+    {
+      "name": "Pulse API",
+      "owner": "Andre Silva",
+      "status": "In progress",
+      "recentActivity": "API contract v2 shared with the team",
+      "priority": "Critical",
+      "summary": "Build the reliable project data layer that keeps every team view in sync."
+    },
+    {
+      "name": "Design System Refresh",
+      "owner": "Priya Nair",
+      "status": "On track",
+      "recentActivity": "Color tokens merged into main",
+      "priority": "Medium",
+      "summary": "Create a more expressive, accessible visual language for the contributor experience."
+    },
+    {
+      "name": "Community Showcase",
+      "owner": "Jordan Lee",
+      "status": "Planned",
+      "recentActivity": "Call for project stories opens Friday",
+      "priority": "Low",
+      "summary": "Celebrate the practical tools and thoughtful ideas our community is shipping."
+    },
+    {
+      "name": "Docs Search",
+      "owner": "Elena García",
+      "status": "At risk",
+      "recentActivity": "Indexing performance needs another test pass",
+      "priority": "High",
+      "summary": "Help contributors find the right answer quickly, even across a growing knowledge base."
+    },
+    {
+      "name": "Accessibility Audit",
+      "owner": "Sam Okafor",
+      "status": "In progress",
+      "recentActivity": "Keyboard navigation review is underway",
+      "priority": "High",
+      "summary": "Make the whole workspace easier to use with a keyboard, screen reader, or zoom."
+    }
+  ]
+}
